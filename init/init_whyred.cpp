@@ -72,6 +72,15 @@ static void init_setup_model_properties()
         property_override_dual("ro.product.model", "ro.vendor.product.model",  "Redmi Note 5 Pro");
     }
 }
+void set_avoid_gfxaccel_config() {
+    struct sysinfo sys;
+    sysinfo(&sys);
+
+    if (sys.totalram <= 3072ull * 1024 * 1024) {
+        // Reduce memory footprint
+        property_set("ro.config.avoid_gfx_accel", "true");
+    }
+}
 
 void vendor_load_properties()
 {
@@ -80,6 +89,8 @@ void vendor_load_properties()
     platform = GetProperty("ro.board.platform", "");
     if (platform != ANDROID_TARGET)
         return;
+
+	set_avoid_gfxaccel_config();
 
     init_setup_model_properties();
 }
